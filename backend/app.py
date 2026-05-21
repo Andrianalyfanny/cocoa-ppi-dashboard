@@ -9,17 +9,19 @@ from flask_cors import CORS
 from sqlalchemy import create_engine, text
 import jwt
 
-# Configuration
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATABASE_DIR = os.path.join(BASE_DIR, "database")
 
-DB_TYPE     = os.getenv("DB_TYPE", "postgres")
-DB_HOST     = os.getenv("DB_HOST", "localhost")
-DB_PORT     = os.getenv("DB_PORT", "5433")
-DB_NAME     = os.getenv("DB_NAME", "cocoa_db")
-DB_USER     = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "andrianaly")
+DB_TYPE     = os.getenv("DB_TYPE")
+DB_HOST     = os.getenv("DB_HOST")
+DB_PORT     = os.getenv("DB_PORT")
+DB_NAME     = os.getenv("DB_NAME")
+DB_USER     = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 SECRET_KEY  = os.getenv("SECRET_KEY", "cocoa-dashboard-secret-2026")
 TOKEN_TTL_H = int(os.getenv("TOKEN_TTL_H", "8"))   
