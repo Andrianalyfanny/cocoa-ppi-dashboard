@@ -12,7 +12,7 @@ import jwt
 from dotenv import load_dotenv
 
 load_dotenv()
-
+"""Load environment variables."""
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATABASE_DIR = os.path.join(BASE_DIR, "database")
 
@@ -28,6 +28,7 @@ TOKEN_TTL_H = int(os.getenv("TOKEN_TTL_H", "8"))
 
 
 def get_db_url():
+    """Get database connection URL."""
         return f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     
 
@@ -40,6 +41,7 @@ _engine = get_engine()
 
 
 def make_token(user_id: int, username: str) -> str:
+    """Generate JWT token."""
     payload = {
         "sub": str(user_id),
         "username": username,
@@ -50,6 +52,7 @@ def make_token(user_id: int, username: str) -> str:
 
 
 def decode_token(token: str):
+    """Decode JWT token."""
     return jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
 
 
@@ -106,7 +109,6 @@ def login():
 @app.route("/api/auth/logout", methods=["POST"])
 @require_auth
 def logout():
-    # JWT is stateless — invalidation happens client-side by discarding the token
     return jsonify({"message": "Logged out"})
 
 
@@ -114,6 +116,7 @@ def logout():
 @app.route("/api/indicators/yearly", methods=["GET"])
 @require_auth
 def yearly_indicators():
+    """Return yearly indicators."""
     with _engine.connect() as conn:
         rows = conn.execute(
             text("""
@@ -144,6 +147,7 @@ def yearly_indicators():
 @app.route("/api/indicators/monthly", methods=["GET"])
 @require_auth
 def monthly_indicators():
+    """Return monthly indicators."""
     with _engine.connect() as conn:
         rows = conn.execute(
             text("""

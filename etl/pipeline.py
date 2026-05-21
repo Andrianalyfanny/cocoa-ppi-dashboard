@@ -22,6 +22,7 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 
 def get_engine():
+    """Connect to the database."""
     url = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
     print(f"[ETL] Connecting to PostgreSQL: {url}")
@@ -29,6 +30,7 @@ def get_engine():
 
 
 def extract_cocoa():
+    """Extract cocoa price data from a CSV file."""
     path = os.path.join(DATASOURCES_DIR, "PCOCOUSDM.csv")
     df = pd.read_csv(path, parse_dates=["observation_date"])
     df.rename(columns={"observation_date": "DATE"}, inplace=True)
@@ -39,6 +41,7 @@ def extract_cocoa():
 
 
 def extract_ppi():
+    """Extract PPI data from a CSV file."""
     path = os.path.join(DATASOURCES_DIR, "PCU3113513113517.csv")
     df = pd.read_csv(path, parse_dates=["observation_date"])
     df.rename(columns={"observation_date": "DATE"}, inplace=True)
@@ -48,9 +51,10 @@ def extract_ppi():
     return df
 
 
-# ─── Transformation ───────────────────────────────────────────────────────────
+# Transformation
 
 def transform_to_yearly(df):
+    """Transform monthly data to yearly data."""
     df["year"] = df["DATE"].dt.yearly
 
     df = df[df["year"].between(2020, 2026)].copy()
@@ -77,6 +81,7 @@ def transform_to_yearly(df):
 
 
 def transform_monthly(cocoa_df, ppi_df):
+    """Transform monthly data to yearly data."""
     combined = pd.concat([cocoa_df, ppi_df], ignore_index=True)
     combined["year"] = combined["DATE"].dt.year
     combined = combined[combined["year"].between(2020, 2026)].copy()
@@ -88,6 +93,7 @@ def transform_monthly(cocoa_df, ppi_df):
 # Load
 
 def create_schema(engine):
+    """Create the database schema."""
     ddl = """
     CREATE TABLE IF NOT EXISTS raw_monthly (
         id SERIAL PRIMARY KEY,
@@ -122,6 +128,7 @@ def create_schema(engine):
     print("[ETL] Schema created in PostgreSQL.")
 
 def load_data(engine, yearly_df, monthly_df):
+    """Load data into the database."""
     monthly_df.to_sql("raw_monthly", engine, if_exists="replace", index=False)
     print(f"[ETL] Loaded {len(monthly_df)} rows into raw_monthly.")
 
@@ -130,6 +137,7 @@ def load_data(engine, yearly_df, monthly_df):
 
 
 def seed_default_user(engine):
+    """Seed the database with a default user."""
     username = os.getenv("ADMIN_USER", "admin")
     password = os.getenv("ADMIN_PASS", "admin123")
     hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
@@ -151,6 +159,7 @@ def seed_default_user(engine):
 
 
 def run():
+    """Run the ETL pipeline."""
     print("=" * 60)
     print(" COCOA DASHBOARD — ETL PIPELINE")
     print(f" Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
