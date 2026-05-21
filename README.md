@@ -123,12 +123,7 @@ YoY change
 YoY % change
 Reference % change (PPI base 100)
 Loads into PostgreSQL
-⚠️ Important Notes
-.env files must NOT be pushed to GitHub
-PostgreSQL must be running before backend start
-Run ETL before starting the API
-Ensure CSV files exist in datasources/
-Project is designed for 2020–2026 data range
+
 🧪 API Endpoints
 Auth
 Login
