@@ -27,8 +27,6 @@ SECRET_KEY  = os.getenv("SECRET_KEY", "cocoa-dashboard-secret-2026")
 TOKEN_TTL_H = int(os.getenv("TOKEN_TTL_H", "8"))   
 
 
-# App factory
-
 def get_db_url():
         return f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     
@@ -40,7 +38,6 @@ engine = get_engine = lambda: create_engine(get_db_url())
 _engine = get_engine()
 
 
-# ─── Helpers ──────────────────────────────────────────────────────────────────
 
 def make_token(user_id: int, username: str) -> str:
     payload = {
@@ -75,7 +72,6 @@ def require_auth(f):
     return wrapper
 
 
-# ─── Auth routes ──────────────────────────────────────────────────────────────
 
 @app.route("/api/auth/login", methods=["POST"])
 def login():
@@ -114,16 +110,10 @@ def logout():
     return jsonify({"message": "Logged out"})
 
 
-# ─── Data routes ──────────────────────────────────────────────────────────────
 
 @app.route("/api/indicators/yearly", methods=["GET"])
 @require_auth
 def yearly_indicators():
-    """
-    Return yearly indicators for the table view.
-    Shape: { cocoa: [...], ppi: [...] }
-    Each item: { year, avg_value, yoy_change, yoy_pct_change, pct_change_ref }
-    """
     with _engine.connect() as conn:
         rows = conn.execute(
             text("""
@@ -154,10 +144,6 @@ def yearly_indicators():
 @app.route("/api/indicators/monthly", methods=["GET"])
 @require_auth
 def monthly_indicators():
-    """
-    Return monthly raw data for charts.
-    Shape: { cocoa: [{date, value}], ppi: [{date, value}] }
-    """
     with _engine.connect() as conn:
         rows = conn.execute(
             text("""
@@ -178,14 +164,10 @@ def monthly_indicators():
     return jsonify({"cocoa": cocoa_data, "ppi": ppi_data})
 
 
-# ─── Health check ─────────────────────────────────────────────────────────────
-
 @app.route("/api/health", methods=["GET"])
 def health():
     return jsonify({"status": "ok", "timestamp": datetime.datetime.utcnow().isoformat()})
 
-
-# ─── Main ─────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
