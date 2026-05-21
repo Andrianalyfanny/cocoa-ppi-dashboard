@@ -143,4 +143,3 @@ Yearly indicators
 GET /api/indicators/yearly
 Monthly data
 GET /api/indicators/monthly
-👨‍💻 Author
