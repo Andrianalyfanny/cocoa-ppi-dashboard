@@ -8,18 +8,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ─── Configuration ────────────────────────────────────────────────────────────
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATASOURCES_DIR = os.path.join(BASE_DIR, "datasources")
 DATABASE_DIR = os.path.join(BASE_DIR, "database")
 
-DB_TYPE = os.getenv("DB_TYPE", "postgres")
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "5433")
-DB_NAME = os.getenv("DB_NAME", "cocoa_db")
-DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "andrianaly")
+DB_TYPE = os.getenv("DB_TYPE")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 
 def get_engine():
@@ -28,7 +27,6 @@ def get_engine():
     print(f"[ETL] Connecting to PostgreSQL: {url}")
     return create_engine(url)
 
-# ─── Extraction ───────────────────────────────────────────────────────────────
 
 def extract_cocoa():
     path = os.path.join(DATASOURCES_DIR, "PCOCOUSDM.csv")
@@ -151,7 +149,6 @@ def seed_default_user(engine):
             print(f"[ETL] User '{username}' already exists — skipping seed.")
 
 
-# Main 
 
 def run():
     print("=" * 60)
